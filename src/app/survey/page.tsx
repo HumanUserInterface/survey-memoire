@@ -147,7 +147,7 @@ export default function SurveyPage() {
   return (
     <>
       <GradientWave />
-      <main className="relative flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-6">
+      <main className="relative flex flex-1 flex-col items-center justify-start sm:justify-center px-5 py-6 sm:px-6 sm:py-8">
         {/* Language toggle */}
         <button
           onClick={() => setLocale(locale === "fr" ? "en" : "fr")}
@@ -157,14 +157,14 @@ export default function SurveyPage() {
           {tr.switchLang}
         </button>
 
-        <div className="w-full max-w-lg space-y-8">
+        <div className="w-full max-w-lg space-y-5 sm:space-y-8">
           {/* Logo */}
-          <div className="flex justify-center">
+          <div className="flex justify-center pt-2 sm:pt-0">
             <Image
               src="/logo.png"
               alt="Logo"
-              width={44}
-              height={44}
+              width={40}
+              height={40}
               className="rounded-xl opacity-90"
             />
           </div>
@@ -178,7 +178,7 @@ export default function SurveyPage() {
 
           {/* Glass card */}
           <div
-            className="rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-2xl p-6 sm:p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
+            className="rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-2xl px-5 py-5 sm:p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
             style={{
               WebkitBackdropFilter: "blur(40px) saturate(180%)",
               backdropFilter: "blur(40px) saturate(180%)",
