@@ -165,7 +165,7 @@ export default function SurveyPage() {
               alt="Logo"
               width={40}
               height={40}
-              className="rounded-xl opacity-90"
+              className="opacity-90"
             />
           </div>
 

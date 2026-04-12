@@ -46,7 +46,7 @@ export default function ThankYouPage() {
               alt="Logo"
               width={44}
               height={44}
-              className="rounded-xl opacity-90"
+              className="opacity-90"
             />
           </div>
 
