@@ -44,10 +44,10 @@ const NATURE_INQUIETUDE_LABELS: Record<string, string> = {
 };
 
 const RESISTANCE_LABELS: Record<string, string> = {
-  outil: "L'outil",
-  representation: "Ce qu'il représente",
+  technique: "Technique",
+  personnel: "Personnel",
   les_deux: "Les deux",
-  pas_de_resistance: "Pas de résistance",
+  pas_de_reticence: "Pas de réticence",
 };
 
 const ENCOURAGEMENT_LABELS: Record<string, string> = {
@@ -60,6 +60,8 @@ const ENCOURAGEMENT_LABELS: Record<string, string> = {
 const FORMATION_LABELS: Record<string, string> = {
   formation_formelle: "Formation formelle",
   ressources_libres: "Ressources libres",
+  workshops: "Ateliers/workshops",
+  mentoring: "Mentorat",
   rien: "Rien proposé",
 };
 
@@ -268,11 +270,11 @@ export function DashboardContent() {
   // H2 metrics
   const identityBarriers = data.filter(
     (r) =>
-      r.nature_resistance === "representation" ||
+      r.nature_resistance === "personnel" ||
       r.nature_resistance === "les_deux"
   ).length;
   const toolBarriers = data.filter(
-    (r) => r.nature_resistance === "outil"
+    (r) => r.nature_resistance === "technique"
   ).length;
   const identityPct =
     total > 0 ? (identityBarriers / total) * 100 : 0;

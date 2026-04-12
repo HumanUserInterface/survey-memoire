@@ -53,6 +53,9 @@ export const questionToColumn: Record<string, string> = {
   competences_suffisantes: "competences_suffisantes",
   qualification_approche: "qualification_approche",
   commentaire_libre: "commentaire_libre",
+  consent_recontact: "consent_recontact",
+  email: "email",
+  rgpd_consent: "rgpd_consent",
 };
 
 export const questions: Question[] = [
@@ -73,6 +76,14 @@ export const questions: Question[] = [
       { value: "retail", label: "Retail / Commerce" },
       { value: "rh", label: "Ressources humaines" },
       { value: "education", label: "Éducation" },
+      { value: "communication_media", label: "Communication / Médias" },
+      { value: "juridique", label: "Juridique / Droit" },
+      { value: "immobilier", label: "Immobilier" },
+      { value: "transport_logistique", label: "Transport / Logistique" },
+      { value: "administration_publique", label: "Administration publique" },
+      { value: "art_culture", label: "Art / Culture" },
+      { value: "energie_environnement", label: "Énergie / Environnement" },
+      { value: "agriculture", label: "Agriculture" },
       { value: "autre", label: "Autre" },
     ],
   },
@@ -191,12 +202,14 @@ export const questions: Question[] = [
     required: true,
     skipIf: { questionId: "usage_ia", values: ["non_jamais"] },
     options: [
-      { value: "phrase_courte", label: "Une phrase courte et directe" },
+      { value: "phrase_courte", label: "Une phrase courte et directe, sans contexte particulier" },
       {
         value: "structuree",
-        label: "Une demande structurée avec contexte et rôle",
+        label: "Une demande structurée avec contexte, rôle et format attendu",
       },
-      { value: "varie", label: "Je varie selon les cas" },
+      { value: "copier_coller", label: "Je copie-colle des prompts trouvés en ligne" },
+      { value: "varie", label: "Je varie selon la complexité de la tâche" },
+      { value: "ne_sais_pas", label: "Je ne fais pas vraiment attention à la façon dont je formule" },
     ],
   },
   {
@@ -300,14 +313,14 @@ export const questions: Question[] = [
     section: 2,
     sectionLabel: "Freins & perceptions",
     question:
-      "Votre résistance à l'IA est-elle plutôt liée à l'outil lui-même, ou à ce qu'il représente pour votre métier ?",
+      "Si vous ressentez une forme de réticence face à l'IA, est-elle plutôt liée à des aspects techniques (fiabilité, complexité) ou à des enjeux plus personnels (impact sur votre métier, votre valeur) ?",
     type: "radio",
     required: true,
     options: [
-      { value: "outil", label: "À l'outil lui-même" },
-      { value: "representation", label: "À ce qu'il représente pour mon métier" },
-      { value: "les_deux", label: "Les deux" },
-      { value: "pas_de_resistance", label: "Je n'ai pas de résistance" },
+      { value: "technique", label: "Aspects techniques (fiabilité, complexité, qualité)" },
+      { value: "personnel", label: "Enjeux personnels (impact sur mon métier, ma valeur)" },
+      { value: "les_deux", label: "Les deux à parts égales" },
+      { value: "pas_de_reticence", label: "Je ne ressens pas de réticence" },
     ],
   },
 
@@ -335,11 +348,13 @@ export const questions: Question[] = [
     type: "radio",
     required: true,
     options: [
-      { value: "formation_formelle", label: "Oui, une formation formelle" },
+      { value: "formation_formelle", label: "Oui, une formation formelle (présentiel ou e-learning structuré)" },
       {
         value: "ressources_libres",
-        label: "Oui, des ressources en libre accès",
+        label: "Oui, des ressources en libre accès (articles, vidéos, guides)",
       },
+      { value: "workshops", label: "Oui, des ateliers ou workshops ponctuels" },
+      { value: "mentoring", label: "Oui, du mentorat ou accompagnement individuel" },
       { value: "rien", label: "Non, rien de proposé" },
     ],
   },
@@ -348,8 +363,8 @@ export const questions: Question[] = [
     section: 3,
     sectionLabel: "Accompagnement en entreprise",
     question:
-      "Comment avez-vous principalement appris à utiliser l'IA ?",
-    type: "radio",
+      "Comment avez-vous appris à utiliser l'IA ? (plusieurs réponses possibles)",
+    type: "checkbox",
     required: true,
     options: [
       { value: "seul_essais", label: "Seul·e, par essais-erreurs" },
@@ -400,6 +415,46 @@ export const questions: Question[] = [
     type: "textarea",
     required: false,
     placeholder: "Votre réponse (facultatif)...",
+  },
+
+  // Section 5 — Recontact (facultatif)
+  {
+    id: "consent_recontact",
+    section: 5,
+    sectionLabel: "Recontact (facultatif)",
+    question:
+      "Acceptez-vous d'être recontacté·e dans le cadre de cette recherche pour un éventuel entretien approfondi ?",
+    type: "radio",
+    required: false,
+    placeholder:
+      "Vos données sont collectées anonymement et stockées de manière sécurisée sur Supabase (serveurs EU). Elles sont utilisées exclusivement dans le cadre d'un mémoire de Master 2. Votre e-mail ne sera utilisé que pour vous recontacter et ne sera jamais partagé. Vous pouvez demander la suppression de vos données à tout moment.",
+    options: [
+      { value: "oui", label: "Oui" },
+      { value: "non", label: "Non" },
+    ],
+  },
+  {
+    id: "email",
+    section: 5,
+    sectionLabel: "Recontact (facultatif)",
+    question: "Votre adresse e-mail",
+    type: "textarea",
+    required: false,
+    placeholder: "votre@email.com",
+    skipIf: { questionId: "consent_recontact", values: ["non"] },
+  },
+  {
+    id: "rgpd_consent",
+    section: 5,
+    sectionLabel: "Recontact (facultatif)",
+    question:
+      "J'ai lu et j'accepte que mes données soient traitées conformément au RGPD dans le cadre de cette recherche universitaire.",
+    type: "radio",
+    required: false,
+    skipIf: { questionId: "consent_recontact", values: ["non"] },
+    options: [
+      { value: "oui", label: "Oui" },
+    ],
   },
 ];
 

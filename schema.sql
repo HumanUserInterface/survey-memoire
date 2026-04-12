@@ -34,7 +34,12 @@ create table if not exists responses (
   qualification_approche text,
 
   -- Section 4 : open
-  commentaire_libre text
+  commentaire_libre text,
+
+  -- Section 5 : contact / recontact
+  consent_recontact text,
+  email text,
+  rgpd_consent text
 );
 
 -- RLS : autoriser les insertions publiques (formulaire), lecture uniquement authentifiée

@@ -23,4 +23,7 @@ export interface SurveyResponse {
   competences_suffisantes: string | null;
   qualification_approche: string | null;
   commentaire_libre: string | null;
+  consent_recontact: string | null;
+  email: string | null;
+  rgpd_consent: string | null;
 }

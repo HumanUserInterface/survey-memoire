@@ -27,6 +27,7 @@ export const translations = {
       2: "Freins & perceptions",
       3: "Accompagnement en entreprise",
       4: "Pour conclure",
+      5: "Recontact (facultatif)",
     } as Record<number, string>,
     // Questions
     questions: {
@@ -45,13 +46,16 @@ export const translations = {
       nature_inquietudes: "Qu'est-ce qui vous inquiète principalement ? (plusieurs réponses possibles)",
       risque_remplacement: "Pensez-vous que l'IA est susceptible de remplacer tout ou partie de votre travail ?",
       remise_en_question_valeur: "Avez-vous le sentiment que l'IA remet en question ce qui fait votre valeur professionnelle ?",
-      nature_resistance: "Votre résistance à l'IA est-elle plutôt liée à l'outil lui-même, ou à ce qu'il représente pour votre métier ?",
+      nature_resistance: "Si vous ressentez une forme de réticence face à l'IA, est-elle plutôt liée à des aspects techniques (fiabilité, complexité) ou à des enjeux plus personnels (impact sur votre métier, votre valeur) ?",
       encouragement_entreprise: "Votre entreprise vous encourage-t-elle à utiliser l'IA ?",
       formation_proposee: "Votre entreprise vous a-t-elle proposé une formation structurée à l'IA ?",
-      apprentissage_modal: "Comment avez-vous principalement appris à utiliser l'IA ?",
+      apprentissage_modal: "Comment avez-vous appris à utiliser l'IA ? (plusieurs réponses possibles)",
       competences_suffisantes: "Estimez-vous avoir les compétences suffisantes pour utiliser l'IA de manière efficace et critique ?",
       qualification_approche: "Si votre entreprise vous encourageait à utiliser l'IA sans vous former, comment qualifieriez-vous cette approche ?",
       commentaire_libre: "En une ou deux phrases, qu'est-ce qui vous permettrait de mieux adopter l'IA dans votre travail ?",
+      consent_recontact: "Acceptez-vous d'être recontacté·e dans le cadre de cette recherche pour un éventuel entretien approfondi ?",
+      email: "Votre adresse e-mail",
+      rgpd_consent: "J'ai lu et j'accepte que mes données soient traitées conformément au RGPD dans le cadre de cette recherche universitaire.",
     } as Record<string, string>,
     // Options (keyed by question id then option value)
     options: {
@@ -64,6 +68,14 @@ export const translations = {
         retail: "Retail / Commerce",
         rh: "Ressources humaines",
         education: "Éducation",
+        communication_media: "Communication / Médias",
+        juridique: "Juridique / Droit",
+        immobilier: "Immobilier",
+        transport_logistique: "Transport / Logistique",
+        administration_publique: "Administration publique",
+        art_culture: "Art / Culture",
+        energie_environnement: "Énergie / Environnement",
+        agriculture: "Agriculture",
         autre: "Autre",
       },
       taille_entreprise: {
@@ -107,9 +119,11 @@ export const translations = {
         non: "Non",
       },
       qualite_prompts: {
-        phrase_courte: "Une phrase courte et directe",
-        structuree: "Une demande structurée avec contexte et rôle",
-        varie: "Je varie selon les cas",
+        phrase_courte: "Une phrase courte et directe, sans contexte particulier",
+        structuree: "Une demande structurée avec contexte, rôle et format attendu",
+        copier_coller: "Je copie-colle des prompts trouvés en ligne",
+        varie: "Je varie selon la complexité de la tâche",
+        ne_sais_pas: "Je ne fais pas vraiment attention à la façon dont je formule",
       },
       verifie_reponses: {
         toujours: "Toujours",
@@ -139,10 +153,10 @@ export const translations = {
         non_protege: "Non, mon métier est protégé",
       },
       nature_resistance: {
-        outil: "À l'outil lui-même",
-        representation: "À ce qu'il représente pour mon métier",
-        les_deux: "Les deux",
-        pas_de_resistance: "Je n'ai pas de résistance",
+        technique: "Aspects techniques (fiabilité, complexité, qualité)",
+        personnel: "Enjeux personnels (impact sur mon métier, ma valeur)",
+        les_deux: "Les deux à parts égales",
+        pas_de_reticence: "Je ne ressens pas de réticence",
       },
       encouragement_entreprise: {
         oui_explicitement: "Oui, explicitement",
@@ -151,8 +165,10 @@ export const translations = {
         ne_sais_pas: "Je ne sais pas",
       },
       formation_proposee: {
-        formation_formelle: "Oui, une formation formelle",
-        ressources_libres: "Oui, des ressources en libre accès",
+        formation_formelle: "Oui, une formation formelle (présentiel ou e-learning structuré)",
+        ressources_libres: "Oui, des ressources en libre accès (articles, vidéos, guides)",
+        workshops: "Oui, des ateliers ou workshops ponctuels",
+        mentoring: "Oui, du mentorat ou accompagnement individuel",
         rien: "Non, rien de proposé",
       },
       apprentissage_modal: {
@@ -173,6 +189,13 @@ export const translations = {
         insuffisante: "Insuffisante",
         acceptable: "Acceptable",
         irresponsable: "Irresponsable",
+      },
+      consent_recontact: {
+        oui: "Oui",
+        non: "Non",
+      },
+      rgpd_consent: {
+        oui: "Oui",
       },
     } as Record<string, Record<string, string>>,
     sliderLabels: {
@@ -201,6 +224,7 @@ export const translations = {
       2: "Concerns & perceptions",
       3: "Workplace support",
       4: "To conclude",
+      5: "Follow-up (optional)",
     } as Record<number, string>,
     questions: {
       secteur: "What industry do you work in?",
@@ -218,13 +242,16 @@ export const translations = {
       nature_inquietudes: "What concerns you the most? (multiple answers possible)",
       risque_remplacement: "Do you think AI could replace all or part of your work?",
       remise_en_question_valeur: "Do you feel that AI questions what makes your professional value?",
-      nature_resistance: "Is your resistance to AI more related to the tool itself, or to what it represents for your profession?",
+      nature_resistance: "If you feel any reluctance toward AI, is it more related to technical aspects (reliability, complexity) or personal concerns (impact on your job, your value)?",
       encouragement_entreprise: "Does your company encourage you to use AI?",
       formation_proposee: "Has your company offered you structured AI training?",
-      apprentissage_modal: "How did you mainly learn to use AI?",
+      apprentissage_modal: "How did you learn to use AI? (multiple answers possible)",
       competences_suffisantes: "Do you feel you have sufficient skills to use AI effectively and critically?",
       qualification_approche: "If your company encouraged you to use AI without training you, how would you describe this approach?",
       commentaire_libre: "In one or two sentences, what would help you better adopt AI in your work?",
+      consent_recontact: "Do you agree to be contacted for a potential follow-up interview as part of this research?",
+      email: "Your email address",
+      rgpd_consent: "I have read and agree that my data will be processed in accordance with GDPR for this academic research.",
     } as Record<string, string>,
     options: {
       secteur: {
@@ -236,6 +263,14 @@ export const translations = {
         retail: "Retail / Commerce",
         rh: "Human Resources",
         education: "Education",
+        communication_media: "Communication / Media",
+        juridique: "Legal / Law",
+        immobilier: "Real Estate",
+        transport_logistique: "Transport / Logistics",
+        administration_publique: "Public Administration",
+        art_culture: "Art / Culture",
+        energie_environnement: "Energy / Environment",
+        agriculture: "Agriculture",
         autre: "Other",
       },
       taille_entreprise: {
@@ -279,9 +314,11 @@ export const translations = {
         non: "No",
       },
       qualite_prompts: {
-        phrase_courte: "A short, direct sentence",
-        structuree: "A structured request with context and role",
-        varie: "It varies depending on the case",
+        phrase_courte: "A short, direct sentence with no particular context",
+        structuree: "A structured request with context, role and expected format",
+        copier_coller: "I copy-paste prompts found online",
+        varie: "I vary depending on the complexity of the task",
+        ne_sais_pas: "I don't really pay attention to how I phrase things",
       },
       verifie_reponses: {
         toujours: "Always",
@@ -311,10 +348,10 @@ export const translations = {
         non_protege: "No, my job is protected",
       },
       nature_resistance: {
-        outil: "The tool itself",
-        representation: "What it represents for my profession",
-        les_deux: "Both",
-        pas_de_resistance: "I have no resistance",
+        technique: "Technical aspects (reliability, complexity, quality)",
+        personnel: "Personal concerns (impact on my job, my value)",
+        les_deux: "Both equally",
+        pas_de_reticence: "I don't feel any reluctance",
       },
       encouragement_entreprise: {
         oui_explicitement: "Yes, explicitly",
@@ -323,8 +360,10 @@ export const translations = {
         ne_sais_pas: "I don't know",
       },
       formation_proposee: {
-        formation_formelle: "Yes, formal training",
-        ressources_libres: "Yes, self-service resources",
+        formation_formelle: "Yes, formal training (in-person or structured e-learning)",
+        ressources_libres: "Yes, self-service resources (articles, videos, guides)",
+        workshops: "Yes, occasional workshops",
+        mentoring: "Yes, mentoring or individual coaching",
         rien: "No, nothing offered",
       },
       apprentissage_modal: {
@@ -345,6 +384,13 @@ export const translations = {
         insuffisante: "Insufficient",
         acceptable: "Acceptable",
         irresponsable: "Irresponsible",
+      },
+      consent_recontact: {
+        oui: "Yes",
+        non: "No",
+      },
+      rgpd_consent: {
+        oui: "Yes",
       },
     } as Record<string, Record<string, string>>,
     sliderLabels: {

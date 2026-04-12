@@ -1,20 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Question } from "@/lib/questions";
 import type { Locale } from "@/lib/i18n";
 import { t } from "@/lib/i18n";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
+import { ChevronDown, Search, Check } from "lucide-react";
 
 interface QuestionCardProps {
   question: Question;
@@ -28,12 +22,36 @@ export function QuestionCard({ question, value, onChange, locale }: QuestionCard
   const [sliderValue, setSliderValue] = useState<number>(
     typeof value === "number" ? value : question.min ?? 1
   );
+  const [selectOpen, setSelectOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof value === "number") {
       setSliderValue(value);
     }
   }, [value]);
+
+  // Focus search input when dropdown opens
+  useEffect(() => {
+    if (selectOpen && searchRef.current) {
+      setTimeout(() => searchRef.current?.focus(), 50);
+    }
+    if (!selectOpen) setSearchQuery("");
+  }, [selectOpen]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!selectOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setSelectOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [selectOpen]);
 
   const getQuestionText = () => tr.questions[question.id] || question.question;
   const getSectionLabel = () => tr.sectionLabels[question.section] || question.sectionLabel;
@@ -44,63 +62,110 @@ export function QuestionCard({ question, value, onChange, locale }: QuestionCard
 
   const renderInput = () => {
     switch (question.type) {
-      case "select":
-        return (
-          <Select
-            value={typeof value === "string" ? value : ""}
-            onValueChange={(v) => { if (v !== null) onChange(v); }}
-          >
-            <SelectTrigger className="w-full h-12 bg-white/[0.03] border-white/10 hover:border-white/20 transition-colors">
-              <SelectValue placeholder={tr.selectPlaceholder} />
-            </SelectTrigger>
-            <SelectContent className="bg-[#1a1a1a]/95 backdrop-blur-xl border-white/10">
-              {question.options?.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value} className="focus:bg-white/10">
-                  {getOptionLabel(opt.value)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      case "select": {
+        const selectedLabel = typeof value === "string" && value
+          ? getOptionLabel(value)
+          : null;
+        const filtered = question.options?.filter((opt) =>
+          getOptionLabel(opt.value).toLowerCase().includes(searchQuery.toLowerCase())
         );
+        return (
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setSelectOpen(!selectOpen)}
+              className="flex w-full items-center justify-between h-12 rounded-xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-colors px-4 text-sm"
+            >
+              <span className={selectedLabel ? "text-foreground" : "text-muted-foreground"}>
+                {selectedLabel || tr.selectPlaceholder}
+              </span>
+              <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${selectOpen ? "rotate-180" : ""}`} />
+            </button>
+            {selectOpen && (
+              <div className="absolute z-50 mt-2 w-full rounded-xl bg-[#1a1a1a]/95 backdrop-blur-xl border border-white/10 shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
+                <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.06]">
+                  <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <input
+                    ref={searchRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={locale === "fr" ? "Rechercher..." : "Search..."}
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+                  />
+                </div>
+                <div className="max-h-60 overflow-y-auto py-1">
+                  {filtered?.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => {
+                        onChange(opt.value);
+                        setSelectOpen(false);
+                      }}
+                      className="flex w-full items-center justify-between px-3 py-2.5 text-sm hover:bg-white/[0.06] transition-colors"
+                    >
+                      {getOptionLabel(opt.value)}
+                      {value === opt.value && <Check className="h-4 w-4 text-primary" />}
+                    </button>
+                  ))}
+                  {filtered?.length === 0 && (
+                    <p className="px-3 py-2 text-sm text-muted-foreground">
+                      {locale === "fr" ? "Aucun résultat" : "No results"}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
 
       case "radio":
         return (
-          <RadioGroup
-            value={typeof value === "string" ? value : ""}
-            onValueChange={(v) => onChange(v)}
-            className="space-y-2"
-          >
-            {question.options?.map((opt, idx) => {
-              const isSelected = value === opt.value;
-              return (
-                <div
-                  key={opt.value}
-                  className={`group flex items-center space-x-3 rounded-xl border p-3.5 transition-all duration-200 cursor-pointer ${
-                    isSelected
-                      ? "border-primary/50 bg-primary/10 shadow-[0_0_20px_rgba(181,168,149,0.1)]"
-                      : "border-white/[0.06] bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]"
-                  }`}
-                  style={{ animationDelay: `${idx * 50}ms` }}
-                  onClick={() => onChange(opt.value)}
-                >
-                  <RadioGroupItem
-                    value={opt.value}
-                    id={`${question.id}-${opt.value}`}
-                    className="border-white/20 data-[state=checked]:border-primary data-[state=checked]:text-primary"
-                  />
-                  <Label
-                    htmlFor={`${question.id}-${opt.value}`}
-                    className="flex-1 cursor-pointer font-normal text-[15px]"
+          <div className="space-y-3">
+            {question.placeholder && (
+              <p className="text-xs text-white/30 leading-relaxed bg-white/[0.02] rounded-lg p-3 border border-white/[0.04]">
+                {question.placeholder}
+              </p>
+            )}
+            <RadioGroup
+              value={typeof value === "string" ? value : ""}
+              onValueChange={(v) => onChange(v)}
+              className="space-y-2"
+            >
+              {question.options?.map((opt, idx) => {
+                const isSelected = value === opt.value;
+                return (
+                  <div
+                    key={opt.value}
+                    className={`group flex items-center space-x-3 rounded-xl border p-3.5 transition-all duration-200 cursor-pointer ${
+                      isSelected
+                        ? "border-primary/50 bg-primary/10 shadow-[0_0_20px_rgba(181,168,149,0.1)]"
+                        : "border-white/[0.06] bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]"
+                    }`}
+                    style={{ animationDelay: `${idx * 50}ms` }}
+                    onClick={() => onChange(opt.value)}
                   >
-                    {getOptionLabel(opt.value)}
-                  </Label>
-                  <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                    {String.fromCharCode(65 + idx)}
-                  </span>
-                </div>
-              );
-            })}
-          </RadioGroup>
+                    <RadioGroupItem
+                      value={opt.value}
+                      id={`${question.id}-${opt.value}`}
+                      className="border-white/20 data-[state=checked]:border-primary data-[state=checked]:text-primary"
+                    />
+                    <Label
+                      htmlFor={`${question.id}-${opt.value}`}
+                      className="flex-1 cursor-pointer font-normal text-[15px]"
+                    >
+                      {getOptionLabel(opt.value)}
+                    </Label>
+                    <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                      {String.fromCharCode(65 + idx)}
+                    </span>
+                  </div>
+                );
+              })}
+            </RadioGroup>
+          </div>
         );
 
       case "checkbox":
