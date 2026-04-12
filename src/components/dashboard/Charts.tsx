@@ -15,7 +15,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-const COLORS = ["#074F57", "#077187", "#74A57F", "#9ECE9A", "#E4C5AF", "#b8b8b8", "#6b7280"];
+const COLORS = ["#B5A895", "#87603F", "#d4c8b8", "#a8845c", "#6b4c2e", "#999999", "#666666"];
 
 interface ChartData {
   name: string;
@@ -42,7 +42,7 @@ export function BarChartCard({ title, data, horizontal = false }: BarChartCardPr
               <XAxis type="number" />
               <YAxis type="category" dataKey="name" width={180} tick={{ fontSize: 12 }} />
               <Tooltip />
-              <Bar dataKey="value" fill="#074F57" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="value" fill="#B5A895" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -62,7 +62,7 @@ export function BarChartCard({ title, data, horizontal = false }: BarChartCardPr
             <XAxis dataKey="name" tick={{ fontSize: 11 }} />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="value" fill="#074F57" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="value" fill="#B5A895" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
@@ -137,8 +137,8 @@ export function SideBySideBarChart({
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="left" name={leftLabel} fill="#074F57" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="right" name={rightLabel} fill="#9ECE9A" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="left" name={leftLabel} fill="#B5A895" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="right" name={rightLabel} fill="#87603F" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

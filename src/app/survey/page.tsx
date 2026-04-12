@@ -12,6 +12,7 @@ import { ProgressBar } from "@/components/survey/ProgressBar";
 import { QuestionCard } from "@/components/survey/QuestionCard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Send, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 type AnswerValue = string | string[] | number;
 
@@ -130,6 +131,15 @@ export default function SurveyPage() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-6">
       <div className="w-full max-w-lg space-y-8">
+        <div className="flex justify-center">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={48}
+            height={48}
+            className="rounded-lg"
+          />
+        </div>
         <ProgressBar
           current={currentIndex + 1}
           total={visibleQuestions.length}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, Copy, Heart } from "lucide-react";
@@ -19,7 +20,6 @@ export default function ThankYouPage() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback for older browsers
       const textarea = document.createElement("textarea");
       textarea.value = surveyUrl;
       document.body.appendChild(textarea);
@@ -33,10 +33,20 @@ export default function ThankYouPage() {
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-6">
-      <Card className="w-full max-w-md border-0 shadow-none text-center">
+      <Card className="w-full max-w-md border-0 shadow-none text-center bg-transparent">
         <CardContent className="space-y-6 pt-6">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent/20">
-            <Heart className="h-8 w-8 text-accent" />
+          <div className="flex justify-center">
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={48}
+              height={48}
+              className="rounded-lg"
+            />
+          </div>
+
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/20">
+            <Heart className="h-8 w-8 text-primary" />
           </div>
 
           <div className="space-y-2">
@@ -61,7 +71,7 @@ export default function ThankYouPage() {
               >
                 {copied ? (
                   <>
-                    <Check className="h-4 w-4 text-accent" />
+                    <Check className="h-4 w-4 text-primary" />
                     Copié
                   </>
                 ) : (

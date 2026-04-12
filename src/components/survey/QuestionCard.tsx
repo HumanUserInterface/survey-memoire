@@ -190,7 +190,7 @@ export function QuestionCard({ question, value, onChange }: QuestionCardProps) {
       <CardHeader className="px-0 pt-0">
         <Badge
           variant="secondary"
-          className="w-fit mb-4 bg-secondary/10 text-secondary hover:bg-secondary/10"
+          className="w-fit mb-4 bg-primary/10 text-primary hover:bg-primary/10"
         >
           {question.sectionLabel}
         </Badge>
