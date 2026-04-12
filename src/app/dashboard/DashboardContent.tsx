@@ -10,8 +10,9 @@ import {
   PieChartCard,
   SideBySideBarChart,
 } from "@/components/dashboard/Charts";
+import { ResponsesTable } from "@/components/dashboard/ResponsesTable";
 import { Button } from "@/components/ui/button";
-import { Download, Loader2, RefreshCw } from "lucide-react";
+import { Download, Loader2, RefreshCw, BarChart3, Table2 } from "lucide-react";
 
 // Label maps for display
 const LLM_LABELS: Record<string, string> = {
@@ -130,6 +131,7 @@ export function DashboardContent() {
   const [data, setData] = useState<SurveyResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [tab, setTab] = useState<"analyse" | "respondants">("analyse");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -366,6 +368,32 @@ export function DashboardContent() {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-1 border-b border-border">
+        <button
+          onClick={() => setTab("analyse")}
+          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            tab === "analyse"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <BarChart3 className="h-4 w-4" />
+          Analyse
+        </button>
+        <button
+          onClick={() => setTab("respondants")}
+          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            tab === "respondants"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Table2 className="h-4 w-4" />
+          Répondants
+        </button>
+      </div>
+
       {/* Global stats */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard title="Total réponses" value={total} />
@@ -382,7 +410,19 @@ export function DashboardContent() {
         />
       </div>
 
-      {total === 0 && (
+      {/* Tab: Répondants */}
+      {tab === "respondants" && (
+        total === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            <p>Aucune réponse pour le moment.</p>
+          </div>
+        ) : (
+          <ResponsesTable data={data} />
+        )
+      )}
+
+      {/* Tab: Analyse */}
+      {tab === "analyse" && total === 0 && (
         <div className="text-center py-12 text-muted-foreground">
           <p>Aucune réponse pour le moment.</p>
           <p className="text-sm mt-1">
@@ -391,7 +431,7 @@ export function DashboardContent() {
         </div>
       )}
 
-      {total > 0 && (
+      {tab === "analyse" && total > 0 && (
         <>
           {/* H1 — Illectronisme fonctionnel */}
           <section className="space-y-4">
