@@ -1,0 +1,26 @@
+export interface SurveyResponse {
+  id: string;
+  created_at: string;
+  secteur: string | null;
+  taille_entreprise: string | null;
+  niveau_poste: string | null;
+  age_tranche: string | null;
+  usage_ia: string | null;
+  frequence_usage: string | null;
+  connait_llm: string | null;
+  comprend_erreurs: string | null;
+  qualite_prompts: string | null;
+  verifie_reponses: string | null;
+  score_maitrise: number | null;
+  niveau_inquietude: string | null;
+  nature_inquietudes: string[] | null;
+  risque_remplacement: string | null;
+  remise_en_question_valeur: number | null;
+  nature_resistance: string | null;
+  encouragement_entreprise: string | null;
+  formation_proposee: string | null;
+  apprentissage_modal: string | null;
+  competences_suffisantes: string | null;
+  qualification_approche: string | null;
+  commentaire_libre: string | null;
+}
