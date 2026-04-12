@@ -83,11 +83,9 @@ export function QuestionCard({ question, value, onChange, locale }: QuestionCard
             </button>
             {selectOpen && (
               <div
-                className="absolute z-50 mt-2 w-full rounded-xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150"
+                className="absolute z-50 mt-2 w-full rounded-xl border border-white/[0.12] shadow-2xl animate-in fade-in-0 zoom-in-95 duration-150"
                 style={{
-                  background: "rgba(15, 15, 15, 0.85)",
-                  WebkitBackdropFilter: "blur(40px) saturate(180%)",
-                  backdropFilter: "blur(40px) saturate(180%)",
+                  background: "rgba(10, 10, 10, 0.97)",
                 }}
               >
                 <div className="flex items-center gap-2 px-3 py-2.5 border-b border-white/[0.06]">
