@@ -82,8 +82,15 @@ export function QuestionCard({ question, value, onChange, locale }: QuestionCard
               <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${selectOpen ? "rotate-180" : ""}`} />
             </button>
             {selectOpen && (
-              <div className="absolute z-50 mt-2 w-full rounded-xl bg-[#1a1a1a]/95 backdrop-blur-xl border border-white/10 shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
-                <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.06]">
+              <div
+                className="absolute z-50 mt-2 w-full rounded-xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150"
+                style={{
+                  background: "rgba(15, 15, 15, 0.85)",
+                  WebkitBackdropFilter: "blur(40px) saturate(180%)",
+                  backdropFilter: "blur(40px) saturate(180%)",
+                }}
+              >
+                <div className="flex items-center gap-2 px-3 py-2.5 border-b border-white/[0.06]">
                   <Search className="h-4 w-4 text-muted-foreground shrink-0" />
                   <input
                     ref={searchRef}
@@ -94,7 +101,7 @@ export function QuestionCard({ question, value, onChange, locale }: QuestionCard
                     className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
                   />
                 </div>
-                <div className="max-h-60 overflow-y-auto py-1">
+                <div className="max-h-60 overflow-y-auto py-1 branded-scrollbar">
                   {filtered?.map((opt) => (
                     <button
                       key={opt.value}
