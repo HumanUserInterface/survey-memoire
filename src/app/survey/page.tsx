@@ -2,22 +2,26 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { getSupabase } from "@/lib/supabase";
 import {
   questions,
   getVisibleQuestions,
   questionToColumn,
 } from "@/lib/questions";
+import type { Locale } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
 import { ProgressBar } from "@/components/survey/ProgressBar";
 import { QuestionCard } from "@/components/survey/QuestionCard";
+import { GradientWave } from "@/components/survey/GradientWave";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Send, Loader2 } from "lucide-react";
-import Image from "next/image";
+import { ArrowLeft, ArrowRight, Send, Loader2, Globe } from "lucide-react";
 
 type AnswerValue = string | string[] | number;
 
 export default function SurveyPage() {
   const router = useRouter();
+  const [locale, setLocale] = useState<Locale>("fr");
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,19 +29,16 @@ export default function SurveyPage() {
   const [direction, setDirection] = useState<"next" | "prev">("next");
   const [isAnimating, setIsAnimating] = useState(false);
 
+  const tr = t(locale);
   const visibleQuestions = getVisibleQuestions(answers);
   const currentQuestion = visibleQuestions[currentIndex];
   const isFirst = currentIndex === 0;
   const isLast = currentIndex === visibleQuestions.length - 1;
-  const currentValue = currentQuestion
-    ? answers[currentQuestion.id]
-    : undefined;
+  const currentValue = currentQuestion ? answers[currentQuestion.id] : undefined;
 
-  // Validate the current question has an answer
   const isCurrentValid = useCallback(() => {
     if (!currentQuestion) return false;
     if (!currentQuestion.required) return true;
-
     if (currentQuestion.type === "checkbox") {
       return Array.isArray(currentValue) && currentValue.length > 0;
     }
@@ -59,11 +60,10 @@ export default function SurveyPage() {
     (dir: "next" | "prev", callback: () => void) => {
       setDirection(dir);
       setIsAnimating(true);
-      // Let the exit animation run, then switch
       setTimeout(() => {
         callback();
         setIsAnimating(false);
-      }, 200);
+      }, 250);
     },
     []
   );
@@ -79,12 +79,38 @@ export default function SurveyPage() {
     animateTo("prev", () => setCurrentIndex((i) => i - 1));
   }, [isFirst, animateTo]);
 
-  // Recalculate index if visible questions change (due to conditional logic)
+  // Recalculate index if visible questions change
   useEffect(() => {
     if (currentIndex >= visibleQuestions.length) {
       setCurrentIndex(Math.max(0, visibleQuestions.length - 1));
     }
   }, [visibleQuestions.length, currentIndex]);
+
+  // Keyboard navigation: Enter = next, Shift+Enter or Backspace on empty = back
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isAnimating || isSubmitting) return;
+
+      // Don't intercept Enter in textarea
+      if (e.key === "Enter" && !e.shiftKey) {
+        const active = document.activeElement;
+        if (active?.tagName === "TEXTAREA") return;
+
+        e.preventDefault();
+        if (isLast) {
+          if (isCurrentValid() || !currentQuestion?.required) {
+            handleSubmit();
+          }
+        } else {
+          goNext();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAnimating, isSubmitting, isLast, currentQuestion, goNext]);
 
   const handleSubmit = async () => {
     if (!isCurrentValid() && currentQuestion?.required) return;
@@ -93,121 +119,156 @@ export default function SurveyPage() {
     setError(null);
 
     try {
-      // Build the row matching database columns
       const row: Record<string, string | string[] | number | null> = {};
       for (const q of questions) {
         const col = questionToColumn[q.id];
         if (!col) continue;
         const val = answers[q.id];
-        if (val === undefined) {
-          row[col] = null;
-        } else {
-          row[col] = val;
-        }
+        row[col] = val === undefined ? null : val;
       }
 
       const { error: insertError } = await getSupabase()
         .from("responses")
         .insert([row]);
 
-      if (insertError) {
-        throw insertError;
-      }
-
+      if (insertError) throw insertError;
       router.push("/thank-you");
     } catch (err) {
       console.error("Submit error:", err);
-      setError(
-        "Une erreur est survenue lors de l'envoi. Veuillez réessayer."
-      );
+      setError(tr.errorSubmit);
       setIsSubmitting(false);
     }
   };
 
-  if (!currentQuestion) {
-    return null;
-  }
+  if (!currentQuestion) return null;
+
+  const progress = ((currentIndex + 1) / visibleQuestions.length) * 100;
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-6">
-      <div className="w-full max-w-lg space-y-8">
-        <div className="flex justify-center">
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={48}
-            height={48}
-            className="rounded-lg"
-          />
-        </div>
-        <ProgressBar
-          current={currentIndex + 1}
-          total={visibleQuestions.length}
-        />
-
-        <div
-          className={`transition-all duration-200 ease-in-out ${
-            isAnimating
-              ? direction === "next"
-                ? "opacity-0 translate-x-4"
-                : "opacity-0 -translate-x-4"
-              : "opacity-100 translate-x-0"
-          }`}
+    <>
+      <GradientWave />
+      <main className="relative flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-6">
+        {/* Language toggle */}
+        <button
+          onClick={() => setLocale(locale === "fr" ? "en" : "fr")}
+          className="fixed top-4 right-4 z-50 flex items-center gap-1.5 rounded-full bg-white/[0.05] backdrop-blur-md border border-white/10 px-3 py-1.5 text-xs font-medium text-white/70 hover:text-white hover:bg-white/[0.08] transition-all"
         >
-          <QuestionCard
-            key={currentQuestion.id}
-            question={currentQuestion}
-            value={currentValue}
-            onChange={handleAnswer}
+          <Globe className="h-3.5 w-3.5" />
+          {tr.switchLang}
+        </button>
+
+        <div className="w-full max-w-lg space-y-8">
+          {/* Logo */}
+          <div className="flex justify-center">
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={44}
+              height={44}
+              className="rounded-xl opacity-90"
+            />
+          </div>
+
+          {/* Progress */}
+          <ProgressBar
+            current={currentIndex + 1}
+            total={visibleQuestions.length}
+            locale={locale}
           />
-        </div>
 
-        {error && (
-          <p className="text-sm text-destructive text-center">{error}</p>
-        )}
-
-        <div className="flex items-center justify-between pt-4">
-          <Button
-            variant="ghost"
-            onClick={goBack}
-            disabled={isFirst || isAnimating}
-            className="gap-2"
+          {/* Glass card */}
+          <div
+            className="rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-2xl p-6 sm:p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
+            style={{
+              WebkitBackdropFilter: "blur(40px) saturate(180%)",
+              backdropFilter: "blur(40px) saturate(180%)",
+            }}
           >
-            <ArrowLeft className="h-4 w-4" />
-            Retour
-          </Button>
-
-          {isLast ? (
-            <Button
-              onClick={handleSubmit}
-              disabled={
-                isSubmitting ||
-                (!isCurrentValid() && currentQuestion.required) ||
+            {/* Animated question */}
+            <div
+              className={`transition-all duration-300 ease-out ${
                 isAnimating
-              }
-              className="gap-2 bg-primary hover:bg-primary/90"
+                  ? direction === "next"
+                    ? "opacity-0 translate-y-4"
+                    : "opacity-0 -translate-y-4"
+                  : "opacity-100 translate-y-0"
+              }`}
             >
-              {isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-              Envoyer
-            </Button>
-          ) : (
-            <Button
-              onClick={goNext}
-              disabled={
-                (!isCurrentValid() && currentQuestion.required) || isAnimating
-              }
-              className="gap-2 bg-primary hover:bg-primary/90"
-            >
-              Suivant
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+              <QuestionCard
+                key={currentQuestion.id}
+                question={currentQuestion}
+                value={currentValue}
+                onChange={handleAnswer}
+                locale={locale}
+              />
+            </div>
+          </div>
+
+          {error && (
+            <p className="text-sm text-destructive text-center">{error}</p>
           )}
+
+          {/* Navigation */}
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              onClick={goBack}
+              disabled={isFirst || isAnimating}
+              className="gap-2 text-white/50 hover:text-white hover:bg-white/[0.05]"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {tr.back}
+            </Button>
+
+            <div className="flex items-center gap-3">
+              {/* Enter hint */}
+              {!isLast && isCurrentValid() && (
+                <span className="hidden sm:inline text-xs text-white/30">
+                  {tr.pressEnter}
+                </span>
+              )}
+
+              {isLast ? (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={
+                    isSubmitting ||
+                    (!isCurrentValid() && currentQuestion.required) ||
+                    isAnimating
+                  }
+                  className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                  {tr.submit}
+                </Button>
+              ) : (
+                <Button
+                  onClick={goNext}
+                  disabled={
+                    (!isCurrentValid() && currentQuestion.required) || isAnimating
+                  }
+                  className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  {tr.next}
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Progress bar thin at bottom */}
+          <div className="w-full h-[2px] bg-white/[0.06] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-primary/80 to-secondary/80 transition-all duration-500 ease-out rounded-full"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
