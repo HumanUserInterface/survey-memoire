@@ -9,6 +9,7 @@ create table if not exists responses (
   taille_entreprise text,
   niveau_poste text,
   age_tranche text,
+  niveau_etudes text,
   usage_ia text,
 
   -- Section 1 : H1 — illectronisme fonctionnel

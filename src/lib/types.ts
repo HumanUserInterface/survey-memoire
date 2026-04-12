@@ -5,6 +5,7 @@ export interface SurveyResponse {
   taille_entreprise: string | null;
   niveau_poste: string | null;
   age_tranche: string | null;
+  niveau_etudes: string | null;
   usage_ia: string | null;
   frequence_usage: string | null;
   connait_llm: string | null;
