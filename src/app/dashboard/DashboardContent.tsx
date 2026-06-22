@@ -112,12 +112,10 @@ function countArrayField(
     counts[key] = 0;
   }
   for (const r of data) {
-    const arr = r[field] as string[] | null;
-    if (arr) {
-      for (const val of arr) {
-        if (counts[val] !== undefined) {
-          counts[val]++;
-        }
+    const values = normalizeMultiValue(r[field]);
+    for (const val of values) {
+      if (counts[val] !== undefined) {
+        counts[val]++;
       }
     }
   }
@@ -125,6 +123,27 @@ function countArrayField(
     name: labels[key] || key,
     value: count,
   }));
+}
+
+// Normalizes a multi-select field into a string[], tolerating legacy storage
+// formats: a native text[] array, a JSON-stringified array ('["a","b"]'),
+// or a single bare string ('a').
+function normalizeMultiValue(raw: SurveyResponse[keyof SurveyResponse]): string[] {
+  if (raw == null) return [];
+  if (Array.isArray(raw)) return raw as string[];
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    if (trimmed.startsWith("[")) {
+      try {
+        const parsed: unknown = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parsed.map((v) => String(v));
+      } catch {
+        // fall through to treating it as a single value
+      }
+    }
+    return trimmed ? [trimmed] : [];
+  }
+  return [];
 }
 
 export function DashboardContent() {
@@ -509,13 +528,14 @@ export function DashboardContent() {
               rightLabel="Formation"
             />
             <div className="grid gap-4 md:grid-cols-2">
-              <PieChartCard
+              <BarChartCard
                 title="Modalités d'apprentissage (Q19)"
-                data={countField(
+                data={countArrayField(
                   data,
                   "apprentissage_modal",
                   APPRENTISSAGE_LABELS
                 )}
+                horizontal
               />
               <BarChartCard
                 title="Compétences suffisantes (Q20)"
