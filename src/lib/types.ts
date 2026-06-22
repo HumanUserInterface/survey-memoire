@@ -20,7 +20,7 @@ export interface SurveyResponse {
   nature_resistance: string | null;
   encouragement_entreprise: string | null;
   formation_proposee: string | null;
-  apprentissage_modal: string | null;
+  apprentissage_modal: string[] | null;
   competences_suffisantes: string | null;
   qualification_approche: string | null;
   commentaire_libre: string | null;

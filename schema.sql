@@ -30,7 +30,7 @@ create table if not exists responses (
   -- Section 3 : H3 — accompagnement institutionnel
   encouragement_entreprise text,
   formation_proposee text,
-  apprentissage_modal text,
+  apprentissage_modal text[],
   competences_suffisantes text,
   qualification_approche text,
 
